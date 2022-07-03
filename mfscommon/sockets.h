@@ -23,6 +23,7 @@
 
 #include <inttypes.h>
 #include <errno.h>
+#include "iptypes.h"
 
 #ifdef EWOULDBLOCK
 #  define ERRNO_ERROR (errno!=EAGAIN && errno!=EWOULDBLOCK)
@@ -48,33 +49,33 @@ int tcpreuseaddr(int sock);
 int tcpnodelay(int sock);
 int tcpaccfhttp(int sock);
 int tcpaccfdata(int sock);
-int tcpnumbind(int sock,uint32_t ip,uint16_t port);
+int tcpnumbind(int sock,ipv4_addr_t ip,uint16_t port);
 int tcpstrbind(int sock,const char *hostname,const char *service);
-int tcpnumconnect(int sock,uint32_t ip,uint16_t port);
-int tcpnumtoconnect(int sock,uint32_t ip,uint16_t port,uint32_t msecto);
+int tcpnumconnect(int sock,ipv4_addr_t ip,uint16_t port);
+int tcpnumtoconnect(int sock,ipv4_addr_t ip,uint16_t port,uint32_t msecto);
 int tcpstrconnect(int sock,const char *hostname,const char *service);
 int tcpstrtoconnect(int sock,const char *hostname,const char *service,uint32_t msecto);
-int tcpnumlisten(int sock,uint32_t ip,uint16_t port,uint16_t queue);
+int tcpnumlisten(int sock,ipv4_addr_t ip,uint16_t port,uint16_t queue);
 int tcpstrlisten(int sock,const char *hostname,const char *service,uint16_t queue);
 int32_t tcptoread(int sock,void *buff,uint32_t leng,uint32_t msecto);
 int32_t tcptowrite(int sock,const void *buff,uint32_t leng,uint32_t msecto);
 int32_t tcptoforward(int srcsock,int dstsock,void *buff,uint32_t leng,uint32_t rcvd,uint32_t sent,uint32_t msecto);
 int tcptoaccept(int sock,uint32_t msecto);
 int tcpaccept(int lsock);
-int tcpgetpeer(int sock,uint32_t *ip,uint16_t *port);
-int tcpgetmyaddr(int sock,uint32_t *ip,uint16_t *port);
+int tcpgetpeer(int sock,ipv4_addr_t *ip,uint16_t *port);
+int tcpgetmyaddr(int sock,ipv4_addr_t *ip,uint16_t *port);
 int tcpclose(int sock);
 
 /* ----------------- UDP ----------------- */
 
 int udpsocket(void);
-int udpresolve(const char *hostname,const char *service,uint32_t *ip,uint16_t *port,int passiveflag);
+int udpresolve(const char *hostname,const char *service,ipv4_addr_t *ip,uint16_t *port,int passiveflag);
 int udpnonblock(int sock);
 int udpgetstatus(int sock);
-int udpnumlisten(int sock,uint32_t ip,uint16_t port);
+int udpnumlisten(int sock,ipv4_addr_t ip,uint16_t port);
 int udpstrlisten(int sock,const char *hostname,const char *service);
-int udpwrite(int sock,uint32_t ip,uint16_t port,const void *buff,uint16_t leng);
-int udpread(int sock,uint32_t *ip,uint16_t *port,void *buff,uint16_t leng);
+int udpwrite(int sock,ipv4_addr_t ip,uint16_t port,const void *buff,uint16_t leng);
+int udpread(int sock,ipv4_addr_t *ip,uint16_t *port,void *buff,uint16_t leng);
 int udpclose(int sock);
 
 /* ----------------- UNIX ---------------- */

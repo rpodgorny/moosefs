@@ -48,6 +48,7 @@
 #include "mfsstrerr.h"
 #include "pcqueue.h"
 #include "sockets.h"
+#include "iptypes.h"
 #include "conncache.h"
 #include "csorder.h"
 #include "csdb.h"
@@ -576,9 +577,9 @@ static inline void write_data_close_worker(worker *w) {
 #endif
 }
 
-static inline void write_prepare_ip (char ipstr[16],uint32_t ip) {
+static inline void write_prepare_ip (char ipstr[16],ipv4_addr_t ip) {
 	if (ipstr[0]==0) {
-		snprintf(ipstr,16,"%"PRIu8".%"PRIu8".%"PRIu8".%"PRIu8,(uint8_t)(ip>>24),(uint8_t)(ip>>16),(uint8_t)(ip>>8),(uint8_t)ip);
+		snprintf(ipstr,16,"%"PRIu8".%"PRIu8".%"PRIu8".%"PRIu8,(uint8_t)(ip>>24),(uint8_t)(ip>>16),(uint8_t)(ip>>8),(uint8_t)ip);  // TODO: this is hard-coded for ipv4
 		ipstr[15]=0;
 	}
 }

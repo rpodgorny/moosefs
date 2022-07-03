@@ -62,12 +62,12 @@
 #define RRDNS_MAXADDR 256
 
 typedef struct sockets_rrdns {
-	uint32_t iptab[RRDNS_MAXADDR];
+	ipv4_addr_t iptab[RRDNS_MAXADDR];
 	uint16_t porttab[RRDNS_MAXADDR];
 	uint16_t datacnt,datapos;
 } sockets_rrdns;
 
-static inline int sockaddrnumfill(struct sockaddr_in *sa,uint32_t ip,uint16_t port) {
+static inline int sockaddrnumfill(struct sockaddr_in *sa,ipv4_addr_t ip,uint16_t port) {
 	memset(sa,0,sizeof(struct sockaddr_in));
 	sa->sin_family = AF_INET;
 	sa->sin_port = htons(port);
@@ -131,7 +131,7 @@ static inline int sockaddrfill(struct sockaddr_in *sa,const char *hostname,const
 }
 
 
-static inline int sockresolve(const char *hostname,const char *service,uint32_t *ip,uint16_t *port,int family,int socktype,int passive) {
+static inline int sockresolve(const char *hostname,const char *service,ipv4_addr_t *ip,uint16_t *port,int family,int socktype,int passive) {
 	struct sockaddr_in sa;
 	if (sockaddrfill(&sa,hostname,service,family,socktype,passive)<0) {
 		return -1;
@@ -563,7 +563,7 @@ int tcpgetstatus(int sock) {
 }
 
 
-int tcpresolve(const char *hostname,const char *service,uint32_t *ip,uint16_t *port,int passive) {
+int tcpresolve(const char *hostname,const char *service,ipv4_addr_t *ip,uint16_t *port,int passive) {
 	return sockresolve(hostname,service,ip,port,AF_INET,SOCK_STREAM,passive);
 }
 
@@ -616,7 +616,7 @@ int tcpstrbind(int sock,const char *hostname,const char *service) {
 	return 0;
 }
 
-int tcpnumbind(int sock,uint32_t ip,uint16_t port) {
+int tcpnumbind(int sock,ipv4_addr_t ip,uint16_t port) {
 	struct sockaddr_in sa;
 	sockaddrnumfill(&sa,ip,port);
 	if (bind(sock,(struct sockaddr *)&sa,sizeof(struct sockaddr_in)) < 0) {
@@ -644,7 +644,7 @@ int tcpstrconnect(int sock,const char *hostname,const char *service) {
 	return -1;
 }
 
-int tcpnumconnect(int sock,uint32_t ip,uint16_t port) {
+int tcpnumconnect(int sock,ipv4_addr_t ip,uint16_t port) {
 	struct sockaddr_in sa;
 	sockaddrnumfill(&sa,ip,port);
 	if (connect(sock,(struct sockaddr *)&sa,sizeof(struct sockaddr_in)) >= 0) {
@@ -713,7 +713,7 @@ int tcpstrtoconnect(int sock,const char *hostname,const char *service,uint32_t m
 	return -1;
 }
 
-int tcpnumtoconnect(int sock,uint32_t ip,uint16_t port,uint32_t msecto) {
+int tcpnumtoconnect(int sock,ipv4_addr_t ip,uint16_t port,uint32_t msecto) {
 	struct sockaddr_in sa;
 	if (descnonblock(sock)<0) {
 		return -1;
@@ -777,7 +777,7 @@ int tcpstrlisten(int sock,const char *hostname,const char *service,uint16_t queu
 	return 0;
 }
 
-int tcpnumlisten(int sock,uint32_t ip,uint16_t port,uint16_t queue) {
+int tcpnumlisten(int sock,ipv4_addr_t ip,uint16_t port,uint16_t queue) {
 	struct sockaddr_in sa;
 	sockaddrnumfill(&sa,ip,port);
 	if (bind(sock,(struct sockaddr *)&sa,sizeof(struct sockaddr_in)) < 0) {
@@ -789,7 +789,7 @@ int tcpnumlisten(int sock,uint32_t ip,uint16_t port,uint16_t queue) {
 	return 0;
 }
 
-int tcpgetpeer(int sock,uint32_t *ip,uint16_t *port) {
+int tcpgetpeer(int sock,ipv4_addr_t *ip,uint16_t *port) {
 	struct sockaddr_in sa;
 	socklen_t leng;
 	leng=sizeof(sa);
@@ -811,7 +811,7 @@ int tcpgetpeer(int sock,uint32_t *ip,uint16_t *port) {
 	return 0;
 }
 
-int tcpgetmyaddr(int sock,uint32_t *ip,uint16_t *port) {
+int tcpgetmyaddr(int sock,ipv4_addr_t *ip,uint16_t *port) {
 	struct sockaddr_in sa;
 	socklen_t leng;
 	leng=sizeof(sa);
@@ -907,11 +907,11 @@ int udpgetstatus(int sock) {
 }
 
 
-int udpresolve(const char *hostname,const char *service,uint32_t *ip,uint16_t *port,int passive) {
+int udpresolve(const char *hostname,const char *service,ipv4_addr_t *ip,uint16_t *port,int passive) {
 	return sockresolve(hostname,service,ip,port,AF_INET,SOCK_DGRAM,passive);
 }
 
-int udpnumlisten(int sock,uint32_t ip,uint16_t port) {
+int udpnumlisten(int sock,ipv4_addr_t ip,uint16_t port) {
 	struct sockaddr_in sa;
 	sockaddrnumfill(&sa,ip,port);
 	return bind(sock,(struct sockaddr *)&sa,sizeof(struct sockaddr_in));
@@ -925,7 +925,7 @@ int udpstrlisten(int sock,const char *hostname,const char *service) {
 	return bind(sock,(struct sockaddr *)&sa,sizeof(struct sockaddr_in));
 }
 
-int udpwrite(int sock,uint32_t ip,uint16_t port,const void *buff,uint16_t leng) {
+int udpwrite(int sock,ipv4_addr_t ip,uint16_t port,const void *buff,uint16_t leng) {
 	struct sockaddr_in sa;
 	if (leng>512) {
 		return -1;
@@ -934,7 +934,7 @@ int udpwrite(int sock,uint32_t ip,uint16_t port,const void *buff,uint16_t leng) 
 	return sendto(sock,buff,leng,0,(struct sockaddr *)&sa,sizeof(struct sockaddr_in));
 }
 
-int udpread(int sock,uint32_t *ip,uint16_t *port,void *buff,uint16_t leng) {
+int udpread(int sock,ipv4_addr_t *ip,uint16_t *port,void *buff,uint16_t leng) {
 	socklen_t templeng;
 	struct sockaddr tempaddr;
 	struct sockaddr_in *saptr;

@@ -161,7 +161,6 @@ static int64_t timediffusec = 0;
 
 #define RECEIVE_TIMEOUT 10
 
-
 static int fd;
 static int disconnect;
 static int donotsendsustainedinodes;
@@ -182,10 +181,10 @@ static uint32_t masterversion;
 static uint8_t attrsize;
 
 static char masterstrip[17];
-static uint32_t masterip=0;
+static ipv4_addr_t masterip=0;
 static uint16_t masterport=0;
 static char srcstrip[17];
-static uint32_t srcip=0;
+static ipv4_addr_t srcip=0;
 
 static uint8_t fterm;
 
@@ -214,8 +213,8 @@ uint8_t master_attrsize(void) {
 	return asize;
 }
 
-uint32_t fs_getsrcip() {
-	uint32_t sip;
+ipv4_addr_t fs_getsrcip() {
+	ipv4_addr_t sip;
 	pthread_mutex_lock(&fdlock);
 	sip = srcip;
 	pthread_mutex_unlock(&fdlock);
@@ -1317,7 +1316,7 @@ int fs_connect(uint8_t oninit,struct connect_args_t *cargs) {
 	md5ctx ctx;
 	uint8_t digest[16];
 	const uint8_t *rptr;
-	uint32_t newmasterip;
+	ipv4_addr_t newmasterip;
 	uint8_t havepassword;
 	uint32_t pleng,ileng;
 	uint8_t sesflags;
@@ -1823,7 +1822,7 @@ int fs_connect(uint8_t oninit,struct connect_args_t *cargs) {
 }
 
 void fs_reconnect() {
-	uint32_t newmasterip;
+	ipv4_addr_t newmasterip;
 	uint32_t i;
 	uint8_t *wptr,regbuff[8+64+17];
 	int32_t rleng;
@@ -1918,7 +1917,7 @@ void fs_reconnect() {
 		rptr = regbuff;
 		if (i==4) {
 			// redirect
-			newmasterip = get32bit(&rptr);
+			newmasterip = get32bit(&rptr);  // TODO: should not have 32 bits hard-coded
 			if (newmasterip==0) {
 				syslog(LOG_WARNING,"mfsmaster %s - doesn't know his leader, waiting a moment and retrying using different IP",masterstrip);
 				tcpclose(fd);

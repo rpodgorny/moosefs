@@ -38,6 +38,7 @@
 #include "slogger.h"
 #include "massert.h"
 #include "mfsalloc.h"
+#include "iptypes.h"
 
 static void *racktree;
 static char *TopologyFileName;
@@ -197,8 +198,9 @@ static void topology_rackname_cleanupstash(void) {
 
 
 
-int topology_parsenet(char *net,uint32_t *fromip,uint32_t *toip) {
-	uint32_t ip,i,octet;
+int topology_parsenet(char *net,ipv4_addr_t *fromip,ipv4_addr_t *toip) {
+	ipv4_addr_t ip;
+	uint32_t i,octet;
 	if (net[0]=='*' && net[1]==0) {
 		*fromip = 0;
 		*toip = 0xFFFFFFFFU;
@@ -310,7 +312,7 @@ int topology_parsenet(char *net,uint32_t *fromip,uint32_t *toip) {
 	return -1;
 }
 
-uint32_t topology_get_rackid(uint32_t ip) {
+uint32_t topology_get_rackid(ipv4_addr_t ip) {
 	return itree_find(racktree,ip);
 }
 
@@ -320,7 +322,7 @@ uint32_t topology_get_rackid(uint32_t ip) {
 // 1 - same rack, different machines
 // 2 - different racks
 
-uint8_t topology_distance(uint32_t ip1,uint32_t ip2) {
+uint8_t topology_distance(ipv4_addr_t ip1,ipv4_addr_t ip2) {
 	uint32_t rid1,rid2;
 	char *rname1,*rname2;
 	int pos,lastbar;
@@ -401,7 +403,7 @@ uint8_t topology_distance(uint32_t ip1,uint32_t ip2) {
 // format (3.0.104+)
 // network	rack_path_sparated_by_vertical_bar
 
-int topology_parseline(char *line,uint32_t lineno,uint32_t *fip,uint32_t *tip,uint32_t *rid) {
+int topology_parseline(char *line,uint32_t lineno,ipv4_addr_t *fip,ipv4_addr_t *tip,uint32_t *rid) {
 	char c,*net,*rackname;
 	char *p;
 
@@ -466,7 +468,8 @@ void topology_load(void) {
 	FILE *fd;
 	char linebuff[10000];
 	uint32_t s,lineno;
-	uint32_t fip,tip,rid;
+	ipv4_addr_t fip,tip;
+	uint32_t rid;
 	void *newtree;
 
 	fd = fopen(TopologyFileName,"r");
